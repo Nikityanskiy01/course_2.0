@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends 'webshop/base.html' %}
+<html lang="en">
+  <head>
+    {% load static %}
+    {% block title %}
+      {% if category %}
+        Интенет магазин - {{ category }}
+      {% else %}
+        Интенет магазин
+      {% endif %}
+    {% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    <div class="single-product-area">
+      <div class="container">
+      <div class="row">
+              <div class="all-items">
+                  <form action="{% url 'webshop:filter' %}" method="get">
+                  <div class="all-filters">
+                  {% include 'includes/category_filter.html' %}
+                  {% include 'includes/base_filters.html' %}
+                  </div>
+                  </form>
+                  <div class="all-products">
+                  {% if products %}
+                  {% for p in products %}
+                    <a class="single-shop-product" href="{% url 'webshop:product_page' p.product_category.category_slug p.product_slug %}">
+                        {% if p.product_image %}
+                        <div class="product-upper">
+                            <img src="{{ p.product_image.url }}" alt="{{ p.product_name }} image" height="300" width="200">
+                        </div>
+                        {% endif %}
+                        <h2>{{ p.product_name }}</h2>
+                        <div class="product-carousel-price">
+                            <ins>{{ p.product_price }} ₽</ins>
+                        </div>
+                    </a>    
+                  {% endfor %}
+                  {% endif %}
+                </div>
+              {% include 'includes/pagination.html' %}
+              </div>
+            </div> 
+        </div>  
+      </div>
+    </div>
+  </div>
+    {% endblock %}
+  </body>
+</html>

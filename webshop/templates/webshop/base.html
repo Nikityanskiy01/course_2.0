@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    {% block head %}
+    {% include 'includes/head.html' %}
+    {% endblock %}
+    <title>{% block title %}Интернет магазин{% endblock %}</title>
+</head>
+<body style='overflow-x:hidden;'>
+
+{% block header %}
+{% include 'includes/header.html' %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block scripts %}
+{% include 'includes/scripts.html' %}
+{% endblock %}
+
+</body>
+</html>
+

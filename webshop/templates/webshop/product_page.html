@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{% extends 'webshop/base.html' %}
+<html lang="en">
+  <head>
+    {% load static %}
+    {% block title %}Internet Shop - {{ product.product_name }}{% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    <div class="single-product-area">
+        <div class="container">
+            <div class="row">
+                <nav class="product-breadcrumbs">
+                    <a href="{% url 'webshop:shop_page' %}">Магазин</a> / 
+                    <a href="{% url 'webshop:category_page' product.product_category.category_slug %}">{{ product.product_category }}</a> / 
+                    <a href="{% url 'webshop:product_page' product.product_category.category_slug product.product_slug %}">{{ product.product_name }}</a>
+                </nav>
+
+                <div class="product-detail">
+                    <div class="product-image">    
+                        <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}">
+                    </div>
+                    <div class="product-inner">
+                        <div class="product-upper-info">
+                            <h2 class="product-name">{{ product.product_name }}</h2>
+                            {% if request.user.is_authenticated %}
+                            <form method="post" action="{% url 'webshop:buy_product' %}" class="cart">
+                                {% csrf_token %}
+                                <div class="product-inner-price">
+                                    <ins>{{ product.product_price }} ₽</ins>
+                                </div>
+                                <div class="quantity">
+                                    <input type="number" size="4" class="input-text qty text" title="Qty" value="1" max="999" name="quantity" min="1" step="1">
+                                </div>
+                                <input type="hidden" value="{{ product.product_slug }}" name="product">
+
+                                <button class="add_to_cart_button" type="submit">Купить</button>
+                            </form>
+                            {% else %}
+                            <h3>Авторизируйтесь, чтобы купить этот товар</h3>
+                            {% endif %}   
+                            
+                            <div class="product-inner-category">
+                                <p>Категория: <a href="{% url 'webshop:category_page' product.product_category.category_slug %}">{{ product.product_category }}</a>.</p>
+                            </div>
+                        </div>
+                        <div class="product-description">
+                            <h3>Описание</h3>
+                            {{ product.product_description }}
+                        </div>
+                        <div class="stocks product-description">
+                            <h3>Остаток</h3>
+                            {% if product.stocks.exists %}
+                                <ul>
+                                    {% for stock in product.stocks.all %}
+                                        <li>{{ stock.stock_name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p style="font-weight: 600;">Товара нет в наличии</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="single-product-bottom">
+                        <div role="tabpanel" id="prod-bottom">
+                            <ul class="product-tab" role="tablist">
+                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Харатеристики</a></li>
+                                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Отзывы</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane fade in active" id="home">
+                                    <h2 class="product-char-h2">Харатеристики товара</h2>
+                                    <hr>
+                                    <div class="product-charact">
+                                    <h3>Критерий</h3>  <h3>Значение</h3>
+                                    {% for charact, value in product.characteristics.items %} 
+                                    <b>{{ charact }}</b> <b>{{ value }}</b>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="profile">
+                                    <h2>Отзывы</h2>
+                                    {% if reviews %}
+                                    <div class="all-reviews">
+                                    {% for review in reviews %}
+                                    <div class="product-review">
+                                        <a href="{% url 'webshop:profile' review.author %}" class="review-author">{{ review.author }} </a>
+                                        {% if review.is_recommend %}
+                                        <i class="fa fa-thumbs-up"></i>
+                                        {% else %}
+                                        <i class="fa fa-thumbs-down"></i>
+                                        {% endif %}
+                                        {% if review.author.id == request.user.id %}
+                                        <form action="{% url 'webshop:remove_review' %}" method="post" class="delete">
+                                            {% csrf_token %}
+                                            <input type="hidden" value="{{ review.id }}" name="review_id">
+                                            <button class="glyphicon glyphicon-remove remove-button" type="submit"></button>
+                                        </form>
+                                        {% endif %}
+                                        <p class="review-content"> {{ review.content }} </p>
+                                        <p class="review-date"> {{ review.date_published }} </p> 
+                                    </div>
+                                    {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="no-reviews">Отзывов пока нет 
+                                        {% if not request.user.is_authenticated %}
+                                        Зарегистрируйтесь, чтобы купить этот товар и оставить отзыв.
+                                        {% elif not view.user_is_allowed_to_comment %}
+                                        Купите товар, чтобы оставить отзыв.
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if request.user.is_authenticated and not view.user_has_review and view.user_is_allowed_to_comment %} 
+                                    <h3 class="leave-review-title">Оставить отзыв</h3>
+                                    <form class="review-form" method="post">
+                                        {% csrf_token %}
+                                        <div class="submit-review">
+                                            {{ form }}
+                                            <p><input type="submit" value="Submit"></p>
+                                        </div>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+                {% if related_products %}
+                <h2 class="related-products-title">Рекомендованные товары</h2>
+                <div class="related-products">
+                        {% for prod in related_products %}
+                        <a class="related-single-product" href="{% url 'webshop:product_page' prod.product_category.category_slug prod.product_slug %}">
+                            <div class="related-product-f-image">
+                                <img src="{{ prod.product_image.url }}" alt="{{ prod.product_name }}">
+                            </div>
+                            <h2>{{ prod.product_name }}</h2>
+                            <div class="product-carousel-price">
+                                <ins>{{ prod.product_price }} ₽</ins>
+                            </div> 
+                        </a>
+                        {% endfor %}                                    
+                </div>
+                {% endif %}                 
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>

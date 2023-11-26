@@ -1,0 +1,29 @@
+{% extends 'webshop/base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+<body>
+{% block content %}
+<div class="container">
+    {% if not request.user.is_authenticated %}
+    <div class="login-form">
+        <form method="post">
+            <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% csrf_token %}
+            {% for f in form %}
+            <p>{{ f.label }}</p>
+            {{ f }}
+            {% endfor %}
+            <button class="login-confirm">Войти</button>
+            <p class="register-href">У вас нет аккаунта? <a href="{% url 'webshop:register' %}">Зарегистрируйтесь!</a></p>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+</body>

@@ -1,0 +1,29 @@
+{% extends 'webshop/base.html' %}
+{% load static %}
+
+{% block title %}{{ view.get_user }} - profile{% endblock %}
+
+{% block content %}
+<div class="user-area">
+    <div class="container">
+        <div class="user-field">
+            <img class="user-avatar" src="{% static 'webshop/img/user_default_image.png' %}">
+            <span class="user-username">{{ view.get_user }}</span>
+        </div>
+        {% if view.get_purchased_items %}
+        <h3>Купленные товары</h3>
+        <div class="purchased-items">
+            {% for i in view.get_purchased_items %}
+            <a class="purchased-item" href="{% url 'webshop:product_page' i.product_category.category_slug i.product_slug %}">
+                <div class="item-image"><img src="{{ i.product_image.url }}"></div>
+                <div class="item-bottom">
+                    <span class="item-name">{{ i.product_name }}</span>
+                    <div class="item-price">{{ i.product_price }} P</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

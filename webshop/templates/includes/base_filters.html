@@ -1,0 +1,17 @@
+<div class="sort-by">
+  <h3>Сортировать по</h3>
+    <p>
+    <input type="radio" value="product_price" name="sort_by">
+    <label for="increase">Сначала недорогие</label><br>
+    <input type="radio" value="-product_price" name="sort_by">
+    <label for="decrease">Сначала дорогие</label>
+    </p>
+</div>
+<div class="price-filter">
+  <h3>Цена</h3>
+  <p><input type="number" name="min_price" placeholder="{{ view.min_product_price }}" > to <input type="number" name="max_price" placeholder="{{ view.max_product_price }}"></p>
+</div>
+{% if category %}
+<input type="hidden" value="{{ category.category_slug }}" name="category">
+{% endif %}
+<button type='submit' class='confirm-button'>Подтвердить</button>

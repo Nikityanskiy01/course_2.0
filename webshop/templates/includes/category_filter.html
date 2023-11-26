@@ -1,0 +1,10 @@
+{% load static %}
+{% if not category %}
+<nav class="category-navigation">
+    <h3><i class="fa fa-bars"></i> Категории</h3>
+    {% for category in view.get_categories %}
+    <a href="{% url 'webshop:category_page' category.category_slug %}">{{ category.category_name }}</a>
+    {% endfor %}
+</nav>
+{% endif %}
+

@@ -1,0 +1,18 @@
+{% extends 'webshop/base.html' %}
+{% load static %}
+
+{% block head %}<link rel="stylesheet" href="{% static 'webshop/css/buy_item.css' %}">{% endblock %}
+{% block title %}Successfully{% endblock %}
+
+{% block header %}{% endblock %}
+{% block content %}
+<div class="center-block">
+    <div class="purchased-item">
+        <img class="item-image" src="{{ item.product_image.url }}">
+        <span class="item-text"><b>Успешно!</b> <br>Вы купили {{ quantity }} {% if quantity == '1' %} штуку {% else %} штук {% endif %}
+             of {{ item.product_name }} for {% widthratio item.product_price 1 quantity %} ₽.</span>
+        <span class='main-button'><a href="{% url 'webshop:shop_page' %}">Вернутся на главную страницу</a></span>
+    </div>
+</div>
+{% endblock %}
+{% block footer %}{% endblock %}
